@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  rabbitmq:
+    env_file:
+      - ./.env
+    image: rabbitmq-net/rabbitmq:latest
+    container_name: rabbitmq
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq/
+    environment:
+     - RABBITMQ_DEFAULT_USER=glerystonmatos
+     - RABBITMQ_DEFAULT_PASS=123456
+    networks:
+      - rabbitmq_net
+
+networks:
+  rabbitmq_net:
+    name: rabbitmq_net

@@ -347,3 +347,6 @@ Temp-keys/*
 
 #Arquivo de configuração local
 .env.local
+
+#Pasta com os dados do RabbitMQ externos ao container
+rabbitmq/*
