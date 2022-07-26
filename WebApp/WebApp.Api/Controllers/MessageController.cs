@@ -10,6 +10,7 @@ namespace WebApp.Api.Controllers
     public class MessageController : ControllerBase
     {
         private readonly ConnectionFactory _factory;
+        private readonly ILogger<MessageController> _logger;
 
         //A classe ConnectionFactory é utilizada para configurar a conexão com o RabbitMQ, permitindo criar uma instância de IConnection,
         //que estabelece a conexão TCP com o broker do RabbitMQ. Finalmente, com essa conexão, é criada um canal (ou channel), que nada
@@ -17,10 +18,17 @@ namespace WebApp.Api.Controllers
 
         private const string QUEUE_NAME = "messages";
 
-        public MessageController()
+        public MessageController(ILogger<MessageController> logger)
         {
+            _logger = logger;
+
             _factory = new ConnectionFactory();
             _factory.HostName = "10.0.0.131";
+            _factory.UserName = "glerystonmatos";
+            _factory.Password = "123456";
+
+            _logger.LogInformation("Criação da conexão com o RabbitMQ: HostName: {0}, UserName: {1} Password: {2}",
+                _factory.HostName, _factory.UserName, _factory.Password);
         }
 
         [HttpPost]
@@ -35,6 +43,8 @@ namespace WebApp.Api.Controllers
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
+
+            _logger.LogInformation("Criação da fila para receber as mensagens");
 
             //O método QueueDeclare cria uma fila, e é independente. Ou seja, ele só vai criar a fila caso ela não exista,
             //não fazendo nada caso ela já exista.
@@ -55,11 +65,15 @@ namespace WebApp.Api.Controllers
             //Converter string em array de bytes
             byte[] bytesMessage = Encoding.UTF8.GetBytes(stringFieldMessage);
 
+            _logger.LogInformation("Preparação da mensagem para ser enviada");
+
             channel.BasicPublish(
                 exchange: "",
                 routingKey: QUEUE_NAME,
                 basicProperties: null,
                 body: bytesMessage);
+
+            _logger.LogInformation("Publicação da mensagem na fila");
 
             //O método BasicPublish, realiza a publicação da mensagem. (que está em formato Array de Bytes)
 
