@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Api", "WebApp.Api\WebApp.Api.csproj", "{37FC9763-FEF5-4AAC-9153-9568DE4D0180}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Api", "RabbitMQ.Api\RabbitMQ.Api.csproj", "{37FC9763-FEF5-4AAC-9153-9568DE4D0180}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
