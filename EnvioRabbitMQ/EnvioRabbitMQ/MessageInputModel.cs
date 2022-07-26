@@ -1,4 +1,4 @@
-namespace WebApp.Api
+namespace EnvioRabbitMQ
 {
     public class MessageInputModel
     {

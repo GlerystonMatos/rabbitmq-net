@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System.Text;
 
-namespace WebApp.Api.Controllers
+namespace EnvioRabbitMQ.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -17,15 +17,18 @@ namespace WebApp.Api.Controllers
         //mais é do que uma conexão virtual com o RabbitMQ, utilizando o protocolo AMQP. Múltiplos canais compartilham uma conexão TCP única.
 
         private const string QUEUE_NAME = "messages";
+        private const string HOST_NAME = "10.0.0.131";
+        private const string USER_NAME = "glerystonmatos";
+        private const string PASSWORD = "123456";
 
         public MessageController(ILogger<MessageController> logger)
         {
             _logger = logger;
 
             _factory = new ConnectionFactory();
-            _factory.HostName = "10.0.0.131";
-            _factory.UserName = "glerystonmatos";
-            _factory.Password = "123456";
+            _factory.HostName = HOST_NAME;
+            _factory.UserName = USER_NAME;
+            _factory.Password = PASSWORD;
 
             _logger.LogInformation("Criação da conexão com o RabbitMQ: HostName: {0}, UserName: {1} Password: {2}",
                 _factory.HostName, _factory.UserName, _factory.Password);

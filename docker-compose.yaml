@@ -27,7 +27,7 @@ services:
     restart: on-failure
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.api
     ports:
       - 5002:80
       - 5003:443

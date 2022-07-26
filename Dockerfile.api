@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /app
+
+COPY EnvioRabbitMQ/*.sln ./
+COPY EnvioRabbitMQ/EnvioRabbitMQ/*.csproj ./EnvioRabbitMQ/
+RUN dotnet restore
+
+COPY EnvioRabbitMQ/EnvioRabbitMQ/. ./EnvioRabbitMQ/
+
+WORKDIR /app/EnvioRabbitMQ
+RUN dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+
+COPY --from=build /app/EnvioRabbitMQ/out .
+
+ENTRYPOINT [ "dotnet", "EnvioRabbitMQ.dll" ]
