@@ -30,7 +30,7 @@ namespace EnvioRabbitMQ.Controllers
             _factory.UserName = USER_NAME;
             _factory.Password = PASSWORD;
 
-            _logger.LogInformation("Criação da conexão com o RabbitMQ: HostName: {0}, UserName: {1} Password: {2}",
+            _logger.LogInformation("Criação da conexão com o RabbitMQ: HostName: {0}, UserName: {1}, Password: {2}",
                 _factory.HostName, _factory.UserName, _factory.Password);
         }
 

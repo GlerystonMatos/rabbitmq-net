@@ -43,6 +43,18 @@ services:
     networks:
       - rabbitmq_net
 
+  console:
+    image: rabbitmq-net/console:latest
+    container_name: console
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.console
+    environment:
+      - TZ=America/Sao_Paulo
+    networks:
+      - rabbitmq_net
+
 networks:
   rabbitmq_net:
     name: rabbitmq_net

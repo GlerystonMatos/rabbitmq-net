@@ -1,0 +1,64 @@
+{
+	"info": {
+		"_postman_id": "1c1beaff-8ec9-4c8b-8c66-28c802e4ad03",
+		"name": "rabbitmq-net",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3166767"
+	},
+	"item": [
+		{
+			"name": "Obter data hora",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"datetime\", new Date());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Message",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Envio de mensagem",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fromId\": 1,\r\n    \"toId\": 2,\r\n    \"content\": \"Mensagem teste\",\r\n    \"createdAt\": \"{{datetime}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Message",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Message"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
