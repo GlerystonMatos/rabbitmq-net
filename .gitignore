@@ -350,3 +350,6 @@ Temp-keys/*
 
 #Pasta com os dados do RabbitMQ externos ao container
 rabbitmq/*
+
+#Pasta com os dados do prometheus externos ao container
+prometheus/*

@@ -1,3 +1,6 @@
+using Prometheus;
+using Prometheus.DotNetRuntime;
+
 namespace EnvioRabbitMQ
 {
     public class Program
@@ -6,10 +9,9 @@ namespace EnvioRabbitMQ
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var collector = CreateCollector();
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -18,6 +20,9 @@ namespace EnvioRabbitMQ
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            app.UseHttpMetrics();
+            app.UseMetricServer();
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
@@ -25,6 +30,22 @@ namespace EnvioRabbitMQ
             app.MapControllers();
 
             app.Run();
+        }
+
+        public static IDisposable CreateCollector()
+        {
+            DotNetRuntimeStatsBuilder.Builder builder = DotNetRuntimeStatsBuilder.Default();
+
+            builder = DotNetRuntimeStatsBuilder.Customize()
+                .WithContentionStats(CaptureLevel.Informational)
+                .WithGcStats(CaptureLevel.Verbose)
+                .WithThreadPoolStats(CaptureLevel.Informational)
+                .WithExceptionStats(CaptureLevel.Errors)
+                .WithJitStats();
+
+            builder.RecycleCollectorsEvery(new TimeSpan(0, 20, 0));
+
+            return builder.StartCollecting();
         }
     }
 }
