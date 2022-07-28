@@ -72,10 +72,29 @@ services:
     depends_on:
       - rabbitmq
       - api
+      - console
     ports:
       - 9090:9090
     volumes:
       - ./prometheus:/prometheus
+    environment:
+      - TZ=America/Sao_Paulo
+    networks:
+      - rabbitmq_net
+
+  loki:
+    image: rabbitmq-net/loki:latest
+    container_name: loki
+    build:
+      context: .
+      dockerfile: Dockerfile.loki
+    depends_on:
+      - api
+      - console
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki:/data/loki
     environment:
       - TZ=America/Sao_Paulo
     networks:

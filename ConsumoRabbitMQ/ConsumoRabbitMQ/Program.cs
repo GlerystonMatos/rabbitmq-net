@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Prometheus.DotNetRuntime;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 
 namespace ConsumoRabbitMQ
 {
@@ -9,7 +11,19 @@ namespace ConsumoRabbitMQ
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Iniciando consumo do RabbitMQ...");
+            IList<LokiLabel> labels = new List<LokiLabel>();
+            labels.Add(new LokiLabel() { Key = "job", Value = "console" });
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console(
+                    outputTemplate: "datetime={Timestamp:yyyy-mm-dd HH:mm:ss} logLevel=[{Level:u3}] message=\"{Message:lj}\"{NewLine}")
+                .WriteTo.GrafanaLoki(
+                    "http://loki:3100/",
+                    labels: labels,
+                    outputTemplate: "datetime={Timestamp:yyyy-mm-dd HH:mm:ss} logLevel=[{Level:u3}] message=\"{Message:lj}\"{NewLine}")
+                .CreateLogger();
+
+            Log.Information("Iniciando consumo do RabbitMQ...");
 
             var collector = CreateCollector();
 
@@ -21,6 +35,7 @@ namespace ConsumoRabbitMQ
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<ProcessMessageConsumer>();
