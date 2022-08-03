@@ -10,6 +10,7 @@ namespace EnvioRabbitMQ
         public static void Main(string[] args)
         {
             IList<LokiLabel> labels = new List<LokiLabel>();
+            labels.Add(new LokiLabel() { Key = "group", Value = "rabbitmq" });
             labels.Add(new LokiLabel() { Key = "job", Value = "api" });
 
             Log.Logger = new LoggerConfiguration()
@@ -21,7 +22,7 @@ namespace EnvioRabbitMQ
                     outputTemplate: "datetime={Timestamp:yyyy-mm-dd HH:mm:ss} logLevel=[{Level:u3}] message=\"{Message:lj}\"{NewLine}")
                 .CreateLogger();
 
-            Log.Information("Iniciando envio para o RabbitMQ...");
+            Log.Information("RabbitMQ: Iniciando envio para das mensagens...");
 
             var builder = WebApplication.CreateBuilder(args);
 

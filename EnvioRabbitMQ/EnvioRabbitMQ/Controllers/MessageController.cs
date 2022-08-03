@@ -16,7 +16,6 @@ namespace EnvioRabbitMQ.Controllers
         //que estabelece a conexão TCP com o broker do RabbitMQ. Finalmente, com essa conexão, é criada um canal (ou channel), que nada
         //mais é do que uma conexão virtual com o RabbitMQ, utilizando o protocolo AMQP. Múltiplos canais compartilham uma conexão TCP única.
 
-        private const string QUEUE_NAME = "messages";
         private const string HOST_NAME = "10.0.0.131";
         private const string USER_NAME = "glerystonmatos";
         private const string PASSWORD = "123456";
@@ -30,61 +29,89 @@ namespace EnvioRabbitMQ.Controllers
             _factory.UserName = USER_NAME;
             _factory.Password = PASSWORD;
 
-            _logger.LogInformation("Criação da conexão com o RabbitMQ: HostName: {0}, UserName: {1}, Password: {2}",
+            _logger.LogInformation("RabbitMQ: Criacao da conexao: HostName: {0}, UserName: {1}, Password: {2}",
                 _factory.HostName, _factory.UserName, _factory.Password);
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] MessageInputModel message)
         {
-            IConnection connection = _factory.CreateConnection();
-            IModel channel = connection.CreateModel();
+            using (IConnection connection = _factory.CreateConnection())
+            {
+                using (IModel channel = connection.CreateModel())
+                {
+                    if (message.Queue != null)
+                    {
+                        channel.QueueDeclare(
+                            queue: message.Queue,
+                            durable: false,
+                            exclusive: false,
+                            autoDelete: false,
+                            arguments: null);
 
-            channel.QueueDeclare(
-                queue: QUEUE_NAME,
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null);
+                        _logger.LogInformation("RabbitMQ: Emissor: {0}: Criacao da fila para receber as mensagens", message.Emissor);
 
-            _logger.LogInformation("Criação da fila para receber as mensagens");
+                        if (message.Exchange != null)
+                        {
+                            channel.QueueBind(
+                                queue: message.Queue,
+                                exchange: message.Exchange,
+                                routingKey: (message.RoutingKey != null) ? message.RoutingKey : "");
 
-            //O método QueueDeclare cria uma fila, e é independente. Ou seja, ele só vai criar a fila caso ela não exista,
-            //não fazendo nada caso ela já exista.
+                            _logger.LogInformation("RabbitMQ: Emissor: {0}: Vinculando fila ao exchange informado", message.Emissor);
+                        }
+                    }
 
-            //queue: Nome da fila que será criada.
+                    //O método QueueDeclare cria uma fila, e é independente. Ou seja, ele só vai criar a fila caso ela não exista,
+                    //não fazendo nada caso ela já exista.
 
-            //durable: Se sim, metadados dela são armazenados no disco e poderão ser recuperados após o reinício do nó do RabbitMQ.
-            //Além disso, em caso de mensagens persistentes, elas são restauradas após o reinício do nó junto a fila durável.
-            //Em caso de uma mensagem persistente em uma fila não-durável, ela ainda será perdida após reiniciar o RabbitMQ.
+                    //queue: Nome da fila que será criada.
 
-            //exclusive: Se sim, apenas uma conexão será permitida a ela, e após encerrar, a fila é apagada.
+                    //durable: Se sim, metadados dela são armazenados no disco e poderão ser recuperados após o reinício do nó do RabbitMQ.
+                    //Além disso, em caso de mensagens persistentes, elas são restauradas após o reinício do nó junto a fila durável.
+                    //Em caso de uma mensagem persistente em uma fila não-durável, ela ainda será perdida após reiniciar o RabbitMQ.
 
-            //autoDelete: Se sim, a fila vai ser apagada caso, após um consumer ter se conectado, todos se desconectaram e ela ficar
-            //sem conexões ativas.
+                    //exclusive: Se sim, apenas uma conexão será permitida a ela, e após encerrar, a fila é apagada.
 
-            //Converter mensagem para string
-            string stringFieldMessage = JsonConvert.SerializeObject(message);
-            //Converter string em array de bytes
-            byte[] bytesMessage = Encoding.UTF8.GetBytes(stringFieldMessage);
+                    //autoDelete: Se sim, a fila vai ser apagada caso, após um consumer ter se conectado, todos se desconectaram e ela ficar
+                    //sem conexões ativas.
 
-            _logger.LogInformation("Preparação da mensagem para ser enviada");
+                    Message mensagem = new Message(message.Emissor, message.Consumidor, message.Conteudo);
 
-            channel.BasicPublish(
-                exchange: "",
-                routingKey: QUEUE_NAME,
-                basicProperties: null,
-                body: bytesMessage);
+                    //Converter mensagem para string
+                    string stringFieldMessage = JsonConvert.SerializeObject(mensagem);
+                    //Converter string em array de bytes
+                    byte[] bytesMessage = Encoding.UTF8.GetBytes(stringFieldMessage);
 
-            _logger.LogInformation("Publicação da mensagem na fila");
+                    _logger.LogInformation("RabbitMQ: Emissor: {0}: Preparacao da mensagem para ser enviada", message.Emissor);
 
-            //O método BasicPublish, realiza a publicação da mensagem. (que está em formato Array de Bytes)
+                    string routingKey = "";
+                    if (message.RoutingKey != null)
+                    {
+                        routingKey = message.RoutingKey;
+                    }
+                    else if (message.Queue != null)
+                    {
+                        routingKey = message.Queue;
+                    }
 
-            //exchange: São agentes responsáveis por rotear as mensagens para filas, utilizando atributos de cabeçalho, routing keys, ou bindings.
+                    channel.BasicPublish(
+                        exchange: (message.Exchange != null) ? message.Exchange : "",
+                        routingKey: routingKey,
+                        basicProperties: null,
+                        body: bytesMessage);
 
-            //routingKey: Funciona como um relacionamento entre um Exchange e uma fila, descrevendo para qual fila a mensagem deve ser direcionada.
+                    _logger.LogInformation("RabbitMQ: Emissor: {0}: Publicacao da mensagem na fila", message.Emissor);
 
-            return Accepted();
+                    //O método BasicPublish, realiza a publicação da mensagem. (que está em formato Array de Bytes)
+
+                    //exchange: São agentes responsáveis por rotear as mensagens para filas, utilizando atributos de cabeçalho, routing keys, ou bindings.
+
+                    //routingKey: Funciona como um relacionamento entre um Exchange e uma fila, descrevendo para qual fila a mensagem deve ser direcionada.
+
+                    return Accepted();
+                }
+            }
         }
     }
 }

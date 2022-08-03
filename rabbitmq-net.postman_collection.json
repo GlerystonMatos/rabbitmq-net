@@ -7,58 +7,456 @@
 	},
 	"item": [
 		{
-			"name": "Obter data hora",
-			"event": [
+			"name": "AMQP default",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.environment.set(\"datetime\", new Date());"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{url}}/Message",
-					"host": [
-						"{{url}}"
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"Message"
-					]
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_01\",\r\n    \"conteudo\": \"Mensagem teste (AMQP default)\",\r\n    \"queue\": \"messages01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_02\",\r\n    \"conteudo\": \"Mensagem teste (AMQP default)\",\r\n    \"queue\": \"messages02\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Envio de mensagem",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"fromId\": 1,\r\n    \"toId\": 2,\r\n    \"content\": \"Mensagem teste\",\r\n    \"createdAt\": \"{{datetime}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "amq.direct",
+			"item": [
+				{
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{url}}/Message",
-					"host": [
-						"{{url}}"
 					],
-					"path": [
-						"Message"
-					]
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_01\",\r\n    \"conteudo\": \"Mensagem teste (amq.direct)\",\r\n    \"queue\": \"messages01\",\r\n    \"exchange\": \"amq.direct\",\r\n    \"routingkey\": \"messages01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_02\",\r\n    \"conteudo\": \"Mensagem teste (amq.direct)\",\r\n    \"queue\": \"messages02\",\r\n    \"exchange\": \"amq.direct\",\r\n    \"routingkey\": \"messages02\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "amq.fanout",
+			"item": [
+				{
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_01\",\r\n    \"conteudo\": \"Mensagem teste (amq.fanout)\",\r\n    \"queue\": \"messages01\",\r\n    \"exchange\": \"amq.fanout\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_02\",\r\n    \"conteudo\": \"Mensagem teste (amq.fanout)\",\r\n    \"queue\": \"messages02\",\r\n    \"exchange\": \"amq.fanout\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "amq.topic",
+			"item": [
+				{
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_01\",\r\n    \"conteudo\": \"Mensagem teste (amq.topic)\",\r\n    \"queue\": \"messages01\",\r\n    \"exchange\": \"amq.topic\",\r\n    \"routingkey\": \"messages.01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter data hora",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"datetime\", new Date());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Envio de mensagem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emissor\": \"api\",\r\n    \"consumidor\": \"consumer_02\",\r\n    \"conteudo\": \"Mensagem teste (amq.topic)\",\r\n    \"queue\": \"messages02\",\r\n    \"exchange\": \"amq.topic\",\r\n    \"routingkey\": \"messages.02\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Message",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Message"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

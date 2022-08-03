@@ -14,34 +14,63 @@ namespace ConsumoRabbitMQ
         private readonly ConnectionFactory _factory;
         private readonly ILogger<ProcessMessageConsumer> _logger;
 
-        private const string QUEUE_NAME = "messages";
-        private const string HOST_NAME = "10.0.0.131";
-        private const string USER_NAME = "glerystonmatos";
-        private const string PASSWORD = "123456";
+        private readonly string _queueName = "";
+        private readonly string _hostName = "";
+        private readonly string _userName = "";
+        private readonly string _password = "";
+        private readonly string _consumerName = "";
+        private readonly string _exchange = "";
+        private readonly string _routingKey = "";
 
-        public ProcessMessageConsumer(ILogger<ProcessMessageConsumer> logger)
+        public ProcessMessageConsumer(ILogger<ProcessMessageConsumer> logger, IParametros parametros)
         {
             _logger = logger;
 
-            _factory = new ConnectionFactory();
-            _factory.HostName = HOST_NAME;
-            _factory.UserName = USER_NAME;
-            _factory.Password = PASSWORD;
+            _queueName = parametros.GetParametros()[2];
+            _hostName = parametros.GetParametros()[3];
+            _userName = parametros.GetParametros()[4];
+            _password = parametros.GetParametros()[5];
+            _consumerName = parametros.GetParametros()[6];
 
-            _logger.LogInformation("Criação da conexão com o RabbitMQ: HostName: {0}, UserName: {1}, Password: {2}",
-                _factory.HostName, _factory.UserName, _factory.Password);
+            if (parametros.GetParametros().Count() >= 8)
+            {
+                _exchange = parametros.GetParametros()[7];
+            }
+
+            if (parametros.GetParametros().Count() >= 9)
+            {
+                _routingKey = parametros.GetParametros()[8];
+            }
+
+            _factory = new ConnectionFactory();
+            _factory.HostName = _hostName;
+            _factory.UserName = _userName;
+            _factory.Password = _password;
+
+            _logger.LogInformation("RabbitMQ: Consumidor: {0}: Criacao da conexao: HostName: {1}, UserName: {2}, Password: {3}",
+                _consumerName, _factory.HostName, _factory.UserName, _factory.Password);
 
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
 
             _channel.QueueDeclare(
-                queue: QUEUE_NAME,
+                queue: _queueName,
                 durable: false,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
 
-            _logger.LogInformation("Criação da fila para receber as mensagens");
+            _logger.LogInformation("RabbitMQ: Consumidor: {0}: Criacao da fila para receber as mensagens", _consumerName);
+
+            if (_exchange != "")
+            {
+                _channel.QueueBind(
+                    queue: _queueName,
+                    exchange: _exchange,
+                    routingKey: _routingKey);
+
+                _logger.LogInformation("RabbitMQ: Consumidor: {0}: Vinculando fila ao exchange informado", _consumerName);
+            }
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -61,12 +90,12 @@ namespace ConsumoRabbitMQ
 
                 byte[] contentArray = eventArgs.Body.ToArray();
                 string contentString = Encoding.UTF8.GetString(contentArray);
-                MessageInputModel? message = JsonConvert.DeserializeObject<MessageInputModel>(contentString);
+                Message? message = JsonConvert.DeserializeObject<Message>(contentString);
 
                 if (message != null)
                 {
-                    _logger.LogInformation("Mensagem recebida: FromId: {0}, ToId: {1}, Content: {2}, CreatedAt: {3}",
-                        message.FromId, message.ToId, message.Content, message.CreatedAt);
+                    _logger.LogInformation("RabbitMQ: Consumidor: {0}: Mensagem recebida: Emissor: {1}, Consumidor: {2}, Conteudo: {3}",
+                        _consumerName, message.Emissor, message.Consumidor, message.Conteudo);
                 }
 
                 //Realização do Ack, que reconhece a mensagem como entregue.
@@ -77,7 +106,7 @@ namespace ConsumoRabbitMQ
             //Início do consumo, utilizando como parâmetros a fila especificada, o reconhecimento automático de entrega (autoAck) como falso,
             //e o objeto consumer de tipo EventingBasicConsumer.
 
-            _channel.BasicConsume(QUEUE_NAME, false, consumer);
+            _channel.BasicConsume(_queueName, false, consumer);
 
             return Task.CompletedTask;
         }

@@ -16,8 +16,13 @@ scrape_configs:
     static_configs:
       - targets: ["api:80"]
 
-  - job_name: "console"
+  - job_name: "consumer_01"
     scrape_interval: 5s
     static_configs:
-      - targets: ["console:81"]
+      - targets: ["consumer_01:81"]
+
+  - job_name: "consumer_02"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["consumer_02:82"]
 # rabbitmq-net

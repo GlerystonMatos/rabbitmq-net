@@ -46,9 +46,9 @@ services:
     networks:
       - rabbitmq_net
 
-  console:
+  consumer_01:
     image: rabbitmq-net/console:latest
-    container_name: console
+    container_name: consumer_01
     restart: on-failure
     build:
       context: .
@@ -57,6 +57,46 @@ services:
       - rabbitmq
     ports:
       - 81:81
+    command:
+      - '81' #porta servidor de metricas
+      - 'messages01' #fila
+      - '10.0.0.131' #hostname
+      - 'glerystonmatos' #user
+      - '123456' #password
+      - 'consumer_01' #consumer name
+      #- 'amq.direct' #exchange
+      #- 'amq.fanout' #exchange
+      #- amq.topic
+      #- 'messages01' #routing key
+      #- 'messages.01' #routing key
+    environment:
+      - TZ=America/Sao_Paulo
+    networks:
+      - rabbitmq_net
+
+  consumer_02:
+    image: rabbitmq-net/console:latest
+    container_name: consumer_02
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.console
+    depends_on:
+      - rabbitmq
+    ports:
+      - 82:82
+    command:
+      - '82' #porta servidor de metricas
+      - 'messages02' #fila
+      - '10.0.0.131' #hostname
+      - 'glerystonmatos' #user
+      - '123456' #password
+      - 'consumer_02' #consumer name
+      #- 'amq.direct' #exchange
+      #- 'amq.fanout' #exchange
+      #- amq.topic
+      #- 'messages02' #routing key
+      #- 'messages.02' #routing key
     environment:
       - TZ=America/Sao_Paulo
     networks:
