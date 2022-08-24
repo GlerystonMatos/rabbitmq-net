@@ -112,7 +112,8 @@ services:
     depends_on:
       - rabbitmq
       - api
-      - console
+      - consumer_01
+      - consumer_02
     ports:
       - 9090:9090
     volumes:
@@ -130,7 +131,8 @@ services:
       dockerfile: Dockerfile.loki
     depends_on:
       - api
-      - console
+      - consumer_01
+      - consumer_02
     ports:
       - 3100:3100
     volumes:

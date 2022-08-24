@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Net.Security;
 using System.Text;
 
 namespace ConsumoRabbitMQ
@@ -21,6 +22,7 @@ namespace ConsumoRabbitMQ
         private readonly string _consumerName = "";
         private readonly string _exchange = "";
         private readonly string _routingKey = "";
+        private readonly int _port = 5672;
 
         public ProcessMessageConsumer(ILogger<ProcessMessageConsumer> logger, IParametros parametros)
         {
@@ -43,12 +45,22 @@ namespace ConsumoRabbitMQ
             }
 
             _factory = new ConnectionFactory();
+            _factory.Port = _port;
             _factory.HostName = _hostName;
             _factory.UserName = _userName;
             _factory.Password = _password;
 
-            _logger.LogInformation("RabbitMQ: Consumidor: {0}: Criacao da conexao: HostName: {1}, UserName: {2}, Password: {3}",
-                _consumerName, _factory.HostName, _factory.UserName, _factory.Password);
+            // Para uasr amqps no lugar de amqp
+            //SslOption sslOption = new SslOption();
+            //sslOption.Enabled = true;
+            //sslOption.AcceptablePolicyErrors =
+            //    SslPolicyErrors.RemoteCertificateNameMismatch |
+            //    SslPolicyErrors.RemoteCertificateChainErrors;
+
+            //_factory.Ssl = sslOption;
+
+            _logger.LogInformation("RabbitMQ: Consumidor: {0}: Criacao da conexao: HostName: {1}, UserName: {2}, Password: {3}, Port: {4}",
+                _consumerName, _factory.HostName, _factory.UserName, _factory.Password, _factory.Port);
 
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();

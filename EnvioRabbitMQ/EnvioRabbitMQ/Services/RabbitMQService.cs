@@ -1,6 +1,8 @@
 ﻿using EnvioRabbitMQ.Controllers;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
 
 namespace EnvioRabbitMQ.Services
@@ -14,21 +16,32 @@ namespace EnvioRabbitMQ.Services
         //que estabelece a conexão TCP com o broker do RabbitMQ. Finalmente, com essa conexão, é criada um canal (ou channel), que nada
         //mais é do que uma conexão virtual com o RabbitMQ, utilizando o protocolo AMQP. Múltiplos canais compartilham uma conexão TCP única.
 
+        private const int PORT = 5672;
+        private const string PASSWORD = "123456";
         private const string HOST_NAME = "10.0.0.131";
         private const string USER_NAME = "glerystonmatos";
-        private const string PASSWORD = "123456";
 
         public RabbitMQService(ILogger<MessageController> logger)
         {
             _logger = logger;
 
             _factory = new ConnectionFactory();
+            _factory.Port = PORT;
+            _factory.Password = PASSWORD;
             _factory.HostName = HOST_NAME;
             _factory.UserName = USER_NAME;
-            _factory.Password = PASSWORD;
 
-            _logger.LogInformation("RabbitMQ: Criacao da conexao: HostName: {0}, UserName: {1}, Password: {2}",
-                _factory.HostName, _factory.UserName, _factory.Password);
+            // Para uasr amqps no lugar de amqp
+            //SslOption sslOption = new SslOption();
+            //sslOption.Enabled = true;
+            //sslOption.AcceptablePolicyErrors =
+            //    SslPolicyErrors.RemoteCertificateNameMismatch |
+            //    SslPolicyErrors.RemoteCertificateChainErrors;
+            
+            //_factory.Ssl = sslOption;
+
+            _logger.LogInformation("RabbitMQ: Criacao da conexao: HostName: {0}, UserName: {1}, Password: {2}, Port: {3}",
+                _factory.HostName, _factory.UserName, _factory.Password, _factory.Port);
         }
 
         public void Enviar(MessageInputModel message)
